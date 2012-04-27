@@ -154,7 +154,7 @@ class LinkableBehavior extends ModelBehavior {
 								$options['fields'] = $db->fields($_Model);
 							}
 							// Leave COUNT() queries alone
-							elseif($options['fields'] != 'COUNT(*) AS `count`')
+							elseif(!is_array($options['fields']) && stripos($options['fields'], 'COUNT') === false)
 							{
 								$options['fields'] = $db->fields($_Model, null, $options['fields']);
 							}
@@ -164,7 +164,7 @@ class LinkableBehavior extends ModelBehavior {
 								$query['fields'] = array_merge($query['fields'], $options['fields']);
 							}
 							// Leave COUNT() queries alone
-							elseif($query['fields'] != 'COUNT(*) AS `count`')
+							elseif(stripos($query['fields'], 'COUNT(*) AS') === false)
 							{
 								$query['fields'] = array_merge($db->fields($Model), $options['fields']);
 							}
@@ -173,14 +173,14 @@ class LinkableBehavior extends ModelBehavior {
 						{
 							if (!empty($association['fields'])) {
 								$options['fields'] = $db->fields($_Model, null, $association['fields']);
-							} else {
+							} elseif (!array_key_exists('fields', $options) || (array_key_exists('fields', $options) && !empty($options['fields']))) {
 								$options['fields'] = $db->fields($_Model);
 							}
 
-							if (is_array($query['fields'])) {
+							if (array_key_exists('fields', $options) && is_array($query['fields'])) {
 								$query['fields'] = array_merge($query['fields'], $options['fields']);
 							} // Leave COUNT() queries alone
-							elseif($query['fields'] != 'COUNT(*) AS `count`') {
+							elseif(array_key_exists('fields', $options) && stripos($query['fields'], 'COUNT(*) AS') === false) {
 								$query['fields'] = array_merge($db->fields($Model), $options['fields']);
 							}
 						}
