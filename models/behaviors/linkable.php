@@ -62,8 +62,12 @@ class LinkableBehavior extends ModelBehavior {
 					} else {
 						$defaults['type'] = $this->_defaults['type'];
 					}
-
-					$options = am($defaults, compact('alias'), $options);
+					if (!empty($options['alias']) && is_array($options['alias'])) {
+						$join_alias = $options['alias'];
+					} else {
+						$join_alias = $alias;
+					}
+					$options = am($defaults, array('alias' => $join_alias), $options);
 
 					if (empty($options['alias'])) {
 						throw new InvalidArgumentException(sprintf('%s::%s must receive aliased links', get_class($this), __FUNCTION__));
